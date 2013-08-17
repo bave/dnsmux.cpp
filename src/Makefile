@@ -8,7 +8,7 @@ all: dnsmux
 ifeq ($(UNAME),Darwin)
 
 dnsmux: dnsmux.cpp event.hpp stream.hpp dgram.hpp id_table.hpp ns_parser.hpp utils.hpp common.hpp
-	clang++ -O3 -Wno-write-strings -std=c++11 -stdlib=libc++ -o $@ ./dnsmux.cpp -levent -lresolv -DDEBUG -DCPP11
+	clang++ -O3 -Wno-write-strings -std=c++11 -stdlib=libc++ -o $@ ./dnsmux.cpp -levent -lresolv -DCPP11
 .PHONY : dnsmux
 
 debug: dnsmux.cpp event.hpp stream.hpp dgram.hpp id_table.hpp ns_parser.hpp utils.hpp common.hpp
@@ -18,7 +18,7 @@ debug: dnsmux.cpp event.hpp stream.hpp dgram.hpp id_table.hpp ns_parser.hpp util
 else
 
 dnsmux: dnsmux.cpp event.hpp stream.hpp dgram.hpp id_table.hpp ns_parser.hpp utils.hpp common.hpp
-	g++ -O3 -Wall -Wno-write-strings -o $@ ./dnsmux.cpp -levent -lresolv -DDEBUG
+	g++ -O3 -Wall -Wno-write-strings -o $@ ./dnsmux.cpp -levent -lresolv
 .PHONY : dnsmux
 
 debug: dnsmux.cpp event.hpp stream.hpp dgram.hpp id_table.hpp ns_parser.hpp utils.hpp common.hpp
