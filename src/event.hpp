@@ -127,7 +127,6 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
         es_ptr->odd_length = 0;
         memset(es_ptr->recv_buf, 0, sizeof(es_ptr->recv_buf));
         memset(es_ptr->odd_buf, 0, sizeof(es_ptr->odd_buf));
-        //exit(EXIT_FAILURE);
         return;
     } else if (ret_size == 0) {
         return;
@@ -146,6 +145,9 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
     for (;;) {
 
         if (ret_size <= seek + 2) {
+#ifdef DEBUG
+            if (debug) printf("odd_buffering1\n");
+#endif
             odd_length = ret_size - seek - 2;
             memcpy(es_ptr->odd_buf, &buf[seek+2], odd_length);
             return;
@@ -153,6 +155,9 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
         msg_length = ntohs(*(uint16_t*)&buf[seek]);
 
         if (ret_size < seek + 2 + msg_length) {
+#ifdef DEBUG
+            if (debug) printf("odd_buffering2\n");
+#endif
             odd_length = ret_size - seek - 2;
             memcpy(es_ptr->odd_buf, &buf[seek+2], odd_length);
             return;
@@ -179,22 +184,18 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
         }
 
         if (ret_size > seek + 2 + msg_length) {
-            printf("ret_size   : %lu\n", ret_size);
-            printf("seeker_size: %d\n", seek+2+msg_length);
-            printf("continue\n");
-            seek = msg_length + 2;
+#ifdef DEBUG
+            if (debug) {
+                printf("ret_size   : %lu\n", ret_size);
+                printf("seeker_size: %d\n", seek+2+msg_length);
+                printf("continue\n");
+            }
+#endif
+            seek = seek + msg_length + 2;
             continue;
         } else {
             break;
         }
-        /*
-        ret_size   : 238
-        seeker_size: 120
-        seek = 120
-        continue
-        ./stream.hpp(135):recv: Connection reset by peer
-        ./event.hpp(119):recv: Connection reset by peer
-        */
 
     }
 
