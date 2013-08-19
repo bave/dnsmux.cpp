@@ -179,7 +179,7 @@ stream::stream_accept_close()
     if (ret < 0) {
         return false;
     } else {
-        stream_fd = -1;
+        stream_accept_fd = -1;
         return true;
     }
 }
@@ -354,8 +354,12 @@ int
 stream::stream_accept()
 {
     stream_accept_addr_length = sizeof(stream_accept_sockaddr);
+    //memset(&stream_accept_sockaddr, 0, sizeof(stream_accept_sockaddr));
     stream_accept_fd = accept(stream_fd, 
             (struct sockaddr*)&stream_accept_sockaddr, &stream_accept_addr_length);
+    if (stream_accept_fd < 0) {
+        STREAM_PERROR("accept");
+    }
     return stream_accept_fd;
 }
 
@@ -397,7 +401,7 @@ stream::stream_get_peer_host()
 #ifdef DEBUG
         if (debug) {
         fprintf(stderr, "%s(%d):getnameinfo: %s\n", __FILE__, __LINE__, gai_strerror(error));
-        printf("%d\n", error);
+        //fprintf(stderr, "%d\n", error);
         }
 #endif
         return std::string("(null)");

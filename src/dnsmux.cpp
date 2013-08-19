@@ -11,13 +11,15 @@
 #include "id_table.hpp"
 #include "event.hpp"
 
-void version()
+void
+version()
 {
     printf("version 0.0.1");
     return;
 }
 
-void usage()
+void
+usage()
 {
     printf( "Usage: dnsmux [options]\n"
             " * show help command\n"
