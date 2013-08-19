@@ -1,6 +1,7 @@
 #include "../src/stream.hpp"
 
 #include <string.h>
+#include <stdlib.h>
 
 void
 usage()

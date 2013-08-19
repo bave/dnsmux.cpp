@@ -1,5 +1,5 @@
 
-all: dnsmux
+all: dnsmux test
 .PHONY : all
 
 dnsmux:

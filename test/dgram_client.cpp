@@ -1,5 +1,7 @@
 #include "../src/dgram.hpp"
 
+#include <stdlib.h>
+
 void
 usage()
 {

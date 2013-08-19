@@ -1,14 +1,13 @@
-/*
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <sys/queue.h>
-*/
+#ifndef __NS_PARSER_HPP__
+#define __NS_PARSER_HPP__
 
+
+#ifdef __linux__
+#include <arpa/nameser.h>
+#else
 #include <nameser.h>
+#endif
+
 #include "common.hpp"
 
 // XXX
@@ -221,3 +220,5 @@ ns_parser::nsdump()
     }
     return;
 }
+
+#endif

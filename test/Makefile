@@ -15,7 +15,8 @@ stream_client: stream_client.cpp ../src/stream.hpp
 	g++ -g -Wall -o ./stream_client ./stream_client.cpp -DDEBUG
 
 id_table: id_table.cpp ../src/id_table.hpp
-	clang++ -std=c++11 -stdlib=libc++ -o ./id_table id_table.cpp
+	#clang++ -std=c++11 -stdlib=libc++ -o ./id_table id_table.cpp
+	g++ -g -Wall -o ./id_table ./id_table.cpp -DDEBUG
 
 clean:
 	rm -rf *.dSYM ./stream_client ./stream_server ./dgram_server ./dgram_client ./id_table
