@@ -9,7 +9,7 @@ dnsmux.cpp depends on:
         boost (http://www.boost.org/)
 
 # git clone https://github.com/bave/dnsmux.cpp.git
-# cd dnsmux.cpp/src
+# cd dnsmux.cpp
 # make
 # ./dnsmux
 ```
