@@ -10,6 +10,7 @@
 #include <netdb.h>
 #include <string.h>
 #include <signal.h>
+#include <unistd.h>
 
 #include <iostream>
 #include <map>
