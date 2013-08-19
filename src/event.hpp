@@ -2,7 +2,7 @@
 #define __EVENT_HPP__
 
 #include <arpa/inet.h>
-#include <event.h>
+#include <event2/event.h>
 
 #include "common.hpp"
 #include "id_table.hpp"

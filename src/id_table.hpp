@@ -1,10 +1,11 @@
 #ifndef __ID_TABLE_HPP__
 #define __ID_TABLE_HPP__
 
+#include <sys/socket.h>
+#include <netinet/in.h>
+
 #include <stdlib.h>
 #include <string.h>
-
-#include <netinet/in.h>
 
 #include <map>
 
