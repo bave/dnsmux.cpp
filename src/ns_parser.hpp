@@ -2,10 +2,10 @@
 #define __NS_PARSER_HPP__
 
 
-#ifdef __linux__
-#include <arpa/nameser.h>
-#else
+#ifdef __APPLE__
 #include <nameser.h>
+#else
+#include <arpa/nameser.h>
 #endif
 
 #include "common.hpp"
