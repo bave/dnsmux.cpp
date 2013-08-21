@@ -1,4 +1,4 @@
-all:dgram_server dgram_client stream_server stream_client id_table
+all:dgram_server dgram_client stream_server stream_client id_table name_pkt
 
 
 
@@ -17,5 +17,8 @@ stream_client: stream_client.cpp ../src/stream.hpp
 id_table: id_table.cpp ../src/id_table.hpp
 	g++ -g -Wall -o ./id_table ./id_table.cpp -DDEBUG
 
+name_pkt: name_pkt.cpp name_pkt.hpp
+	g++ -g -Wall -o ./name_pkt ./name_pkt.cpp -lresolv
+
 clean:
-	rm -rf *.dSYM ./stream_client ./stream_server ./dgram_server ./dgram_client ./id_table
+	rm -rf *.dSYM ./stream_client ./stream_server ./dgram_server ./dgram_client ./id_table ./name_pkt
