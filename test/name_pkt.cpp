@@ -1,12 +1,16 @@
 #include <stdlib.h>
 #include <resolv.h>
-#include <nameser.h>
 #include <time.h>
 
 #include <sys/select.h>
 #include <sys/types.h>
 #include <sys/time.h>
+
+#ifdef __linux__
 #include <arpa/nameser.h>
+#else
+#include <nameser.h>
+#endif
 
 
 #include "name_pkt.hpp"
