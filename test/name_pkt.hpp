@@ -472,9 +472,9 @@ void name_pkt::n_build_payload(void)
         } else if (n_ans_type == 28) { 
             // IPv6 name type response
 #ifdef __linux__
-            N_WRITE128(n_ans_raddr6.__u6_addr, count_pointer);
+            N_WRITE128(n_ans_raddr6.__in6_u, count_pointer);
 #else
-            N_WRITE128(n_ans_raddr6.__u6_u, count_pointer);
+            N_WRITE128(n_ans_raddr6.__u6_addr, count_pointer);
 #endif
         } else {
             memcpy(count_pointer, n_ans_rdata, (int)n_ans_rlen);
@@ -503,9 +503,9 @@ void name_pkt::n_build_payload(void)
         } else if (n_name_type == 28) { 
             // IPv6 name type response
 #ifdef __linux__
-            N_WRITE128(n_ans_raddr6.__u6_addr, count_pointer);
+            N_WRITE128(n_ans_raddr6.__in6_u, count_pointer);
 #else
-            N_WRITE128(n_ans_raddr6.__u6_u, count_pointer);
+            N_WRITE128(n_ans_raddr6.__u6_addr, count_pointer);
 #endif
         } else {
             memcpy(count_pointer, n_name_rdata, (int)n_name_rlen);
@@ -534,9 +534,9 @@ void name_pkt::n_build_payload(void)
         } else if (n_add_type == 28) {
             // IPv6 name type response
 #ifdef __linux__
-            N_WRITE128(n_ans_raddr6.__u6_addr, count_pointer);
+            N_WRITE128(n_ans_raddr6.__in6_u, count_pointer);
 #else
-            N_WRITE128(n_ans_raddr6.__u6_u, count_pointer);
+            N_WRITE128(n_ans_raddr6.__u6_addr, count_pointer);
 #endif
         } else {
             memcpy(count_pointer, n_add_rdata, (int)n_add_rlen);

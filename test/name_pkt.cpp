@@ -144,11 +144,19 @@ int main(int argc, char** argv)
     count = ns_msg_count(ns_handle, ns_s_an);
 
     if (count == 0) {
+#ifdef __linux__
+        printf("sec:%lu usec:%06li %s nxdomain", sec, usec, argv[1]);
+#else
         printf("sec:%lu usec:%06d %s nxdomain", sec, usec, argv[1]);
+#endif
         close(sockfd);
         return 0;
     } else {
+#ifdef __linux__
+        printf("sec:%lu usec:%06li ", sec, usec);
+#else
         printf("sec:%lu usec:%06d ", sec, usec);
+#endif
     }
     
     int i;
