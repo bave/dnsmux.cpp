@@ -70,7 +70,7 @@ public:
     ssize_t stream_sendto(const void* buf, size_t length,
                           const std::string& dest_host,
                           const std::string& dest_port);
-    ssize_t stream_re_sendto(const void* buf, size_t length)
+    ssize_t stream_re_sendto(const void* buf, size_t length);
 #endif
 
     bool stream_close();
@@ -108,7 +108,7 @@ private:
 
 #ifdef __linux__
 ssize_t
-stream::stream_sendto(const void* buf, size_t length
+stream::stream_sendto(const void* buf, size_t length,
                       const std::string& dest_host,
                       const std::string& dest_port)
 {
@@ -155,6 +155,7 @@ stream::stream_sendto(const void* buf, size_t length
     }
 }
 
+ssize_t
 stream::stream_re_sendto(const void* buf, size_t length)
 {
 
