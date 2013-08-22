@@ -86,12 +86,29 @@ ed_callback(evutil_socket_t fd, int16_t what, void* arg)
 
     if (ed_ptr->tcp->get_fd() <= 0) {
 ed_callback_reconn_loop:
+#ifdef __linux__
+        if (tfo) {
+            ret_size = ed_ptr->tcp->stream_re_sendto(buf, send_size, 0);
+            if (ret_size <= 0) {
+                goto ed_callback_reconn_loop;
+            }
+            ed_ptr->tcp->es_redispatch();
+        } else {
+            ed_ptr->tcp->stream_reconnect();
+            ret_size = ed_ptr->tcp->stream_send(buf, send_size, 0);
+            if (ret_size < 0) {
+                goto ed_callback_reconn_loop;
+            }
+            ed_ptr->tcp->es_redispatch();
+        }
+#else
         ed_ptr->tcp->stream_reconnect();
         ed_ptr->tcp->es_redispatch();
         ret_size = ed_ptr->tcp->stream_send(buf, send_size, 0);
         if (ret_size < 0) {
             goto ed_callback_reconn_loop;
         }
+#endif
         return;
     } else {
         ret_size = ed_ptr->tcp->stream_send(buf, send_size, 0);

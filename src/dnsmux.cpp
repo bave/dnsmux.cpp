@@ -22,12 +22,18 @@ void
 usage()
 {
     printf( "Usage: dnsmux [options]\n"
+#ifdef DEBUG
+            " * show debug messages\n"
+            "    -d, --debug\n"
+#endif
+#ifdef __linux__
+            " * enable tfo (linux only)\n"
+            "    -t, --tfo\n"
+#endif
             " * show help command\n"
             "    -h, --help\n"
             " * show version of dnsmux\n"
             "    -v, --version\n"
-            " * show debug messages\n"
-            "    -d, --debug\n"
             " * one query use one tcp sesstion\n"
             "    -1, --one\n"
             " * proxy service port (default: 53)\n"
@@ -63,15 +69,23 @@ main(int argc, char** argv)
 #ifdef DEBUG
         {"debug",   no_argument,       NULL, 'd'},
 #endif
+#ifdef __linux__
+        {"tfo",     no_argument,       NULL, 't'},
+#endif
         {0, 0, 0, 0}
     };
 
     //opt, optarg;
-    while((opt = getopt_long(argc, argv, "hd1vs:l:p:", long_options, &option_index)) != -1){
+    while((opt = getopt_long(argc, argv, "hd1vts:l:p:", long_options, &option_index)) != -1){
         switch(opt){
 #ifdef DEBUG
             case 'd':
                 debug = true;
+                break;
+#endif
+#ifdef __linux__
+            case 't':
+                tfo = true;
                 break;
 #endif
             case 'h':

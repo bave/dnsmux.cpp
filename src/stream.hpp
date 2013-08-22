@@ -15,6 +15,11 @@
 #include <iostream>
 #include <map>
 
+#ifdef __linux__
+#include <netinet/tcp.h>
+#include <x86_64-linux-gnu/bits/socket.h>
+#endif
+
 #include "common.hpp"
 
 #ifdef DEBUG
@@ -61,6 +66,13 @@ public:
     ssize_t stream_send(const void* buf, size_t length, int flag);
     ssize_t stream_recv(void* buf, size_t length);
 
+#ifdef __linux__
+    ssize_t stream_sendto(const void* buf, size_t length,
+                          const std::string& dest_host,
+                          const std::string& dest_port);
+    ssize_t stream_re_sendto(const void* buf, size_t length)
+#endif
+
     bool stream_close();
     bool stream_accept_close();
     bool stream_reconnect();
@@ -92,6 +104,88 @@ private:
     struct sockaddr_storage stream_accept_sockaddr;
     socklen_t stream_accept_addr_length;
 };
+
+
+#ifdef __linux__
+ssize_t
+stream::stream_sendto(const void* buf, size_t length
+                      const std::string& dest_host,
+                      const std::string& dest_port)
+{
+    int error;
+    struct addrinfo *res;
+    struct addrinfo hints;
+
+    if (stream_family == 0) {
+        return false;
+    }
+
+    memset(&hints, 0, sizeof(hints));
+
+    hints.ai_family = stream_family;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_ALL | AI_ADDRCONFIG;
+
+    error = getaddrinfo(dest_host.c_str(), dest_port.c_str(), &hints, &res);
+    if (error) {
+#ifdef DEBUG
+        if (debug) {
+        fprintf(stderr, "%s(%d):getaddrinfo: %s\n", __FILE__, __LINE__, gai_strerror(error));
+        }
+#endif
+        return -1;
+    }
+
+    ssize_t size;
+    size = sendto(stream_fd, buf, length, MSG_FASTOPEN,res->ai_addr, res->ai_addrlen);
+    if (size < 0) {
+        STREAM_PERROR("sendto");
+        freeaddrinfo(res);
+        stream_close();
+        return -1;
+    } else if (size == 0) {
+        freeaddrinfo(res);
+        stream_close();
+        return size;
+    } else {
+        stream_status = STREAM_CONNECT;
+        stream_get_peer_sockaddr();
+        freeaddrinfo(res);
+        return size;
+    }
+}
+
+stream::stream_re_sendto(const void* buf, size_t length)
+{
+
+    if (stream_family == AF_INET) {
+        stream_open("AF_INET");
+    } else if (stream_family == AF_INET6){
+        stream_open("AF_INET6");
+    } else if (stream_family == 0) {
+        return -1;
+    } else {
+        return -1;
+    }
+
+    if (stream_status == STREAM_CONNECT) {
+        ssize_t size;
+        size = sendto(stream_fd, buf, length, MSG_FASTOPEN, (struct sockaddr*)&stream_peer_sockaddr, stream_peer_addr_length);
+        if (size <= 0) {
+            STREAM_PERROR("sendto");
+            stream_close();
+            return -1;
+        } else {
+            stream_status = STREAM_CONNECT;
+            stream_get_peer_sockaddr();
+            return size;
+        }
+    } else {
+        stream_close();
+        return -1;
+    }
+}
+#endif
 
 ssize_t
 stream::stream_send(const void* buf, size_t length, int flag)
@@ -252,8 +346,6 @@ stream::stream_connect(const std::string& dest_host, const std::string& dest_por
     if (connect(stream_fd, res->ai_addr, res->ai_addrlen) < 0) {
         if(errno == EINPROGRESS) {
             // non-block
-            freeaddrinfo(res);
-            stream_status = STREAM_CONNECT;
             return true;
         } else {
             STREAM_PERROR("connect");
