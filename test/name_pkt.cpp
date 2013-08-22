@@ -145,9 +145,9 @@ int main(int argc, char** argv)
 
     if (count == 0) {
 #ifdef __linux__
-        printf("sec:%lu usec:%06li %s nxdomain", sec, usec, argv[1]);
+        printf("sec:%lu usec:%06li %s nxdomain\n", sec, usec, argv[1]);
 #else
-        printf("sec:%lu usec:%06d %s nxdomain", sec, usec, argv[1]);
+        printf("sec:%lu usec:%06d %s nxdomain\n", sec, usec, argv[1]);
 #endif
         close(sockfd);
         return 0;
