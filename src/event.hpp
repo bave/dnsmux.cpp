@@ -149,9 +149,7 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
         return;
     }
 
-    if (one) {
-        es_ptr->stream_close();
-    }
+    //if (one) { es_ptr->stream_close(); }
 
     if (odd_length) {
         memmove((es_ptr->recv_buf)+odd_length, es_ptr->recv_buf, ret_size);
@@ -217,6 +215,7 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
     }
 
     odd_length = 0;
+    if (one) { es_ptr->stream_close(); }
     return;
 }
 
