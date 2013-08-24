@@ -2,6 +2,7 @@
 
 import sys
 import socket
+import time
 
 PORT = 10443
 
@@ -27,11 +28,31 @@ def server():
     s.close()
 
 
-def client():
+def normal_client():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+    p = time.time()
+    s.connect((sys.argv[2], PORT))
+    s.sendto("1. Using TCP fast open!!!")
+    ret = s.recv(1024)
+    c = time.time()
+    print (c - p)
+    print ret
+
+    s.send("2. continued data sending")
+    ret = s.recv(1024)
+    print ret
+
+    s.close()
+
+def tfo_client():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    p = time.time()
     s.sendto("1. Using TCP fast open!!!", MSG_FASTOPEN, (sys.argv[2], PORT))
     ret = s.recv(1024)
+    c = time.time()
+    print (c - p)
     print ret
 
     s.send("2. continued data sending")
@@ -47,15 +68,20 @@ def usage():
     print '   -s'
     print '     server mode'
     print ''
-    print '   -c [servername]'
-    print '     clinet mode'
+    print '   -n [servername]'
+    print '     normal clinet mode'
+    print ''
+    print '   -f [servername]'
+    print '     fastopen clinet mode'
     print ''
 
 def main():
     if '-s' in sys.argv:
         server()
-    elif '-c' in sys.argv:
-        client()
+    elif '-n' in sys.argv:
+        normal_client()
+    elif '-f' in sys.argv:
+        tfo_client()
     else:
         usage()
 

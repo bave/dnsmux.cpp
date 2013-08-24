@@ -197,6 +197,7 @@ void n_set_id(int i);
 void n_reset_flags(void);
 void n_set_flags(uint16_t i);
 void n_build_payload(void);
+void n_build_tcp_payload(void);
 
 bool n_create_rr_questionA(string &s);
 bool n_create_rr_questionAAAA(string &s);
@@ -422,6 +423,141 @@ return false;
 
 bool name_pkt::n_is_pkt_ok(void) {
     return false;
+};
+
+void name_pkt::n_build_tcp_payload(void)
+{
+    uint16_t n_id_nw_s    = htons(n_id);
+    uint16_t n_flags_nw_s = htons(n_flags);
+    uint16_t n_qus_nw_s   = htons(n_qus);
+    uint16_t n_ans_nw_s   = htons(n_ans);
+    uint16_t n_name_nw_s  = htons(n_name);
+    uint16_t n_add_nw_s   = htons(n_add);
+
+
+    count_pointer++;
+    count_pointer++;
+    N_WRITE16(n_id_nw_s, count_pointer);
+    N_WRITE16(n_flags_nw_s, count_pointer);
+    N_WRITE16(n_qus_nw_s, count_pointer);
+    N_WRITE16(n_ans_nw_s, count_pointer);
+    N_WRITE16(n_name_nw_s, count_pointer);
+    N_WRITE16(n_add_nw_s, count_pointer);
+
+    if (n_qus > 0) {
+        memcpy(count_pointer, n_qus_name, (int)n_qus_size);
+        for (size_t i=0; i<n_qus_size; i++) count_pointer++;
+
+        uint16_t n_qus_type_nw_s = htons(n_qus_type);
+        N_WRITE16(n_qus_type_nw_s, count_pointer);
+
+        uint16_t n_qus_class_nw_s = htons(n_qus_class);
+        N_WRITE16(n_qus_class_nw_s, count_pointer);
+    }
+
+    if (n_ans > 0) {
+        memcpy(count_pointer, n_ans_name, (int)n_ans_size);
+        for (size_t i=0; i<n_qus_size; i++) count_pointer++;
+
+        uint16_t n_ans_type_nw_s = htons(n_ans_type);
+        N_WRITE16(n_ans_type_nw_s, count_pointer);
+
+        uint16_t n_ans_class_nw_s = htons(n_ans_class);
+        N_WRITE16(n_ans_class_nw_s, count_pointer);
+
+        uint32_t n_ans_ttl_nw_s = htonl(n_ans_ttl);
+        N_WRITE32(n_ans_ttl_nw_s, count_pointer);
+
+        uint16_t n_ans_rlen_nw_s = htons(n_ans_rlen);
+        N_WRITE16(n_ans_rlen_nw_s, count_pointer);
+
+        if (n_ans_type == 1) {
+            N_WRITE32(n_ans_raddr.s_addr, count_pointer);
+        } else if (n_ans_type == 28) { 
+            // IPv6 name type response
+#ifdef __linux__
+            N_WRITE128(n_ans_raddr6.__in6_u, count_pointer);
+#else
+            N_WRITE128(n_ans_raddr6.__u6_addr, count_pointer);
+#endif
+        } else {
+            memcpy(count_pointer, n_ans_rdata, (int)n_ans_rlen);
+            for (size_t i=0; i<n_qus_size; i++) count_pointer++;
+        }
+    }
+
+    if (n_name > 0) {
+        memcpy(count_pointer, n_name_name, (int)n_name_size);
+        for (size_t i=0; i<n_qus_size; i++) count_pointer++;
+
+        uint16_t n_name_type_nw_s = htons(n_name_type);
+        N_WRITE16(n_name_type_nw_s, count_pointer);
+
+        uint16_t n_name_class_nw_s = htons(n_name_class);
+        N_WRITE16(n_name_class_nw_s, count_pointer);
+
+        uint32_t n_name_ttl_nw_s = htonl(n_name_ttl);
+        N_WRITE32(n_name_ttl_nw_s, count_pointer);
+
+        uint16_t n_name_rlen_nw_s = htons(n_name_rlen);
+        N_WRITE16(n_name_rlen_nw_s, count_pointer);
+
+        if (n_name_type == 1) {
+            N_WRITE32(n_name_raddr.s_addr, count_pointer);
+        } else if (n_name_type == 28) { 
+            // IPv6 name type response
+#ifdef __linux__
+            N_WRITE128(n_ans_raddr6.__in6_u, count_pointer);
+#else
+            N_WRITE128(n_ans_raddr6.__u6_addr, count_pointer);
+#endif
+        } else {
+            memcpy(count_pointer, n_name_rdata, (int)n_name_rlen);
+            for (size_t i=0; i<n_qus_size; i++) count_pointer++;
+        }
+    }
+
+    if (n_add > 0) {
+        memcpy(count_pointer, n_add_name, (int)n_add_size);
+        for (size_t i=0; i<n_qus_size; i++) count_pointer++;
+
+        uint16_t n_add_type_nw_s = htons(n_add_type);
+        N_WRITE16(n_add_type_nw_s, count_pointer);
+
+        uint16_t n_add_class_nw_s = htons(n_add_class);
+        N_WRITE16(n_add_class_nw_s, count_pointer);
+
+        uint32_t n_add_ttl_nw_s = htonl(n_add_ttl);
+        N_WRITE32(n_add_ttl_nw_s, count_pointer);
+
+        uint16_t n_add_rlen_nw_s = htons(n_add_rlen);
+        N_WRITE16(n_add_rlen_nw_s, count_pointer);
+
+        if (n_add_type == 1) {
+            N_WRITE32(n_add_raddr.s_addr, count_pointer);
+        } else if (n_add_type == 28) {
+            // IPv6 name type response
+#ifdef __linux__
+            N_WRITE128(n_ans_raddr6.__in6_u, count_pointer);
+#else
+            N_WRITE128(n_ans_raddr6.__u6_addr, count_pointer);
+#endif
+        } else {
+            memcpy(count_pointer, n_add_rdata, (int)n_add_rlen);
+            for (size_t i=0; i<n_qus_size; i++) count_pointer++;
+        }
+    }
+
+
+    n_size_payload = (size_t)(count_pointer - n_payload_buf);
+    //printf("base  : %p\n", n_payload_buf);
+    //printf("shift : %p\n", count_pointer);
+    //printf("byte  : %d\n", n_size_payload);
+
+    uint16_t* msg_size = (uint16_t*)n_payload_buf;
+    *msg_size = htons((uint16_t)(n_size_payload-2));
+
+    return;
 };
 
 void name_pkt::n_build_payload(void)

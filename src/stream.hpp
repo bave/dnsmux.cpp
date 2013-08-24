@@ -137,7 +137,7 @@ stream::stream_sendto(const void* buf, size_t length,
     }
 
     ssize_t size;
-    size = sendto(stream_fd, buf, length, MSG_FASTOPEN,res->ai_addr, res->ai_addrlen);
+    size = sendto(stream_fd, buf, length, MSG_FASTOPEN, res->ai_addr, res->ai_addrlen);
     if (size < 0) {
         STREAM_PERROR("sendto");
         freeaddrinfo(res);

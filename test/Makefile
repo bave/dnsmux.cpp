@@ -20,5 +20,11 @@ id_table: id_table.cpp ../src/id_table.hpp
 name_pkt: name_pkt.cpp name_pkt.hpp
 	g++ -g -Wall -o ./name_pkt ./name_pkt.cpp -lresolv
 
+name_tcp_pkt: name_tcp_pkt.cpp name_pkt.hpp
+	g++ -g -Wall -o ./name_tcp_pkt ./name_tcp_pkt.cpp -lresolv
+
+name_tfo_pkt: name_tfo_pkt.cpp name_pkt.hpp
+	g++ -g -Wall -o ./name_tfo_pkt ./name_tfo_pkt.cpp -lresolv
+
 clean:
-	rm -rf *.dSYM ./stream_client ./stream_server ./dgram_server ./dgram_client ./id_table ./name_pkt
+	rm -rf *.dSYM ./stream_client ./stream_server ./dgram_server ./dgram_client ./id_table ./name_pkt ./name_tcp_pkt ./name_tfo_pkt

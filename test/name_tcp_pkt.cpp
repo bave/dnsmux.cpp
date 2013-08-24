@@ -34,20 +34,20 @@ int main(int argc, char** argv)
     npkt.n_set_id(ns_id);
     npkt.n_set_flags(0x0100);
     npkt.n_create_rr_questionA(name);
-    npkt.n_build_payload();
+    npkt.n_build_tcp_payload();
 
     ssize_t len;
-    socklen_t sin_size = sizeof(struct sockaddr_in);
+    //socklen_t sin_size = sizeof(struct sockaddr_in);
 
     int sockfd;
-    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in sin1;
     struct sockaddr_in sin2;
-    unsigned char buf[BUFSIZ];
+    unsigned char buf[0xFFFF];
 
     memset(&sin1, 0, sizeof(sin1));
     memset(&sin2, 0, sizeof(sin2));
-    memset(buf, 0, BUFSIZ);
+    memset(buf, 0, 0xFFFF);
 
     res_init();
     //printf("%d\n", get_resolver_count());
@@ -80,7 +80,21 @@ int main(int argc, char** argv)
     t_val.tv_sec = 2;
 
     gettimeofday(&prev, NULL);
-    sendto(sockfd, npkt.n_payload(), npkt.n_payload_size(), 0, (SA*)&sin1, sizeof(sin1));
+
+    s_retval = connect(sockfd, (SA*)&sin1, sizeof(sin1));
+    if (s_retval < 0) {
+        perror("connect");
+        exit(1);
+    }
+
+    len = send(sockfd, npkt.n_payload(), npkt.n_payload_size(), 0);
+    if (len < 0) {
+        perror("send");
+        exit(1);
+    } else if (len == 0) {
+        perror("send");
+    }
+    //sendto(sockfd, npkt.n_payload(), npkt.n_payload_size(), 0, (SA*)&sin1, sizeof(sin1));
 
     re:
     FD_ZERO(&s_fd);
@@ -98,8 +112,8 @@ int main(int argc, char** argv)
             return 0;
         }
     }
-
-    len = recvfrom(sockfd, buf, BUFSIZ, 0, (SA*)&sin2, &sin_size); 
+    //len = recvfrom(sockfd, buf, BUFSIZ, 0, (SA*)&sin2, &sin_size); 
+    len = recv(sockfd, buf, 0xFFFF, 0);
     gettimeofday(&current, NULL);
 
     time_t sec;
@@ -125,18 +139,16 @@ int main(int argc, char** argv)
     }
 
 
-
     if (len == -1) { exit(1); }
 
     unsigned int name_id;
     ns_msg ns_handle;
     memset(&ns_handle, 0, sizeof(ns_handle));
-    ns_initparse((const unsigned char*)buf,  len, &ns_handle);
+    ns_initparse((const unsigned char*)buf+2,  len, &ns_handle);
     name_id = ns_msg_id(ns_handle);
     if (name_id != ns_id) {
         goto re;
     }
-
 
     int count;
     ns_rr rr;
@@ -154,7 +166,7 @@ int main(int argc, char** argv)
     } else {
 #ifdef __linux__
         printf("%lu.%06li ", sec, usec);
-#else
+#else 
         printf("%lu.%06d ", sec, usec);
 #endif
     }
