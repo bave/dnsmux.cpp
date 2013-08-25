@@ -1,0 +1,12 @@
+;
+; BIND reverse data file for local loopback interface
+;
+$TTL	3600
+@	IN	SOA	my. root.my. (
+			      1		; Serial
+			 604800		; Refresh
+			  86400		; Retry
+			2419200		; Expire
+			 3600 )		; Negative Cache TTL
+;
+@	IN	NS	ns.my.
