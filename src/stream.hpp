@@ -2,6 +2,37 @@
 #define __STREAM_HPP__
 
 
+/*
+// for Information of TFO flag
+
+sysctl net.ipv4.tcp_fastopen
+or
+file:////proc/sys/net/ipv4/tcp_fastopen
+
+// Bit Flags for sysctl_tcp_fastopen
+#define TFO_CLIENT_ENABLE       1
+#define TFO_SERVER_ENABLE       2
+
+// Data in SYN w/o cookie option
+#define TFO_CLIENT_NO_COOKIE    4
+
+// Process SYN data but skip cookie validation
+#define TFO_SERVER_COOKIE_NOT_CHKED     0x100
+
+//Accept SYN data w/o any cookie option
+#define TFO_SERVER_COOKIE_NOT_REQD      0x200
+
+// Force enable TFO on all listeners, i.e., not requiring the
+// TCP_FASTOPEN socket option. SOCKOPT1/2 determine how to set
+// max_qlen. Always create TFO child sockets on a TFO listener
+// even. when cookie/data not present. (For testing purpose!)
+#define TFO_SERVER_WO_SOCKOPT1  0x400
+#define TFO_SERVER_WO_SOCKOPT2  0x800
+
+// All listen socket to use tfo
+#define TFO_SERVER_ALWAYS       0x1000
+*/
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/errno.h>
@@ -139,20 +170,28 @@ stream::stream_sendto(const void* buf, size_t length,
     ssize_t size;
     size = sendto(stream_fd, buf, length, MSG_FASTOPEN, res->ai_addr, res->ai_addrlen);
     if (size < 0) {
+
         STREAM_PERROR("sendto");
         freeaddrinfo(res);
         stream_close();
         return -1;
+
     } else if (size == 0) {
+
         freeaddrinfo(res);
         stream_close();
         return size;
+
     } else {
+
         stream_status = STREAM_CONNECT;
         stream_get_peer_sockaddr();
         freeaddrinfo(res);
         return size;
+
     }
+
+    return size;
 }
 
 ssize_t
@@ -171,20 +210,32 @@ stream::stream_re_sendto(const void* buf, size_t length)
 
     if (stream_status == STREAM_CONNECT) {
         ssize_t size;
-        size = sendto(stream_fd, buf, length, MSG_FASTOPEN, (struct sockaddr*)&stream_peer_sockaddr, stream_peer_addr_length);
+        size = sendto(stream_fd, buf, length, MSG_FASTOPEN,
+                      (struct sockaddr*)&stream_peer_sockaddr,
+                      stream_peer_addr_length);
+
         if (size <= 0) {
+
             STREAM_PERROR("sendto");
             stream_close();
             return -1;
+
         } else {
+
             stream_status = STREAM_CONNECT;
             stream_get_peer_sockaddr();
             return size;
+
         }
+
     } else {
+
         stream_close();
         return -1;
+
     }
+
+    return -1;
 }
 #endif
 
@@ -192,6 +243,7 @@ ssize_t
 stream::stream_send(const void* buf, size_t length, int flag)
 {
     ssize_t ret;
+
     if (stream_status == STREAM_CONNECT) {
 
         ret = send(stream_fd, buf, length, flag);
@@ -296,17 +348,24 @@ STREAM_RECONNECT_LOOP:
 
     if (stream_status == STREAM_CONNECT) {
         if (connect(stream_fd,
-                    (struct sockaddr*)&stream_peer_sockaddr, stream_peer_addr_length) < 0) {
+                    (struct sockaddr*)&stream_peer_sockaddr,
+                    stream_peer_addr_length) < 0) {
             STREAM_PERROR("connect");
             sleep(1);
             goto STREAM_RECONNECT_LOOP;
+
         } else {
+
             stream_status = STREAM_CONNECT;
             stream_get_peer_sockaddr();
             return true;
+
         }
+
     } else {
+
         return false;
+
     }
 }
 
@@ -346,19 +405,27 @@ stream::stream_connect(const std::string& dest_host, const std::string& dest_por
 
     if (connect(stream_fd, res->ai_addr, res->ai_addrlen) < 0) {
         if(errno == EINPROGRESS) {
+
             // non-block
             return true;
+
         } else {
+
             STREAM_PERROR("connect");
             stream_close();
             return false;
+
         }
+
     } else {
+
         freeaddrinfo(res);
         stream_status = STREAM_CONNECT;
         stream_get_peer_sockaddr();
         return true;
+
     }
+
     freeaddrinfo(res);
     stream_close();
     return false;
@@ -384,19 +451,27 @@ stream::stream_connect(const struct sockaddr* dest_addr, socklen_t dest_length)
     */
     if (connect(stream_fd, dest_addr, dest_length) < 0) {
         if(errno == EINPROGRESS) {
+
             // non-block
             stream_status = STREAM_CONNECT;
             return true;
+
         } else {
+
             STREAM_PERROR("connect");
             stream_close();
             return false;
+
         }
+
     } else {
+
         stream_status = STREAM_CONNECT;
         stream_get_peer_sockaddr();
         return true;
+
     }
+
     stream_close();
     return false;
 }
@@ -449,11 +524,15 @@ stream::stream_accept()
 {
     stream_accept_addr_length = sizeof(stream_accept_sockaddr);
     //memset(&stream_accept_sockaddr, 0, sizeof(stream_accept_sockaddr));
+
     stream_accept_fd = accept(stream_fd, 
-            (struct sockaddr*)&stream_accept_sockaddr, &stream_accept_addr_length);
+                              (struct sockaddr*)&stream_accept_sockaddr,
+                              &stream_accept_addr_length);
+
     if (stream_accept_fd < 0) {
         STREAM_PERROR("accept");
     }
+
     return stream_accept_fd;
 }
 
@@ -461,15 +540,18 @@ stream::stream_accept()
 struct sockaddr* stream::stream_get_peer_sockaddr()
 {
     if (stream_status == STREAM_CONNECT) {
+
         stream_peer_addr_length = sizeof(stream_peer_sockaddr);
-        if (getpeername(stream_fd, 
-                        (struct sockaddr*)&stream_peer_sockaddr,
-                        &stream_peer_addr_length) < 0) {
+        if (getpeername(stream_fd, (struct sockaddr*)&stream_peer_sockaddr, &stream_peer_addr_length) < 0) {
             STREAM_PERROR("getpeername");
             return NULL;
+
         }
+
         return (struct sockaddr*)&stream_peer_sockaddr;
+
     } else if (stream_status == STREAM_LISTEN) {
+
         stream_peer_addr_length = sizeof(stream_peer_sockaddr);
         if (getpeername(stream_accept_fd, 
                         (struct sockaddr*)&stream_peer_sockaddr,
@@ -531,49 +613,63 @@ int
 stream::stream_open(const std::string& type)
 {
     if (type.compare("AF_INET") == 0) {
+
         stream_fd = socket(AF_INET, SOCK_STREAM, 0);
         if (stream_fd == -1) {
             STREAM_PERROR("socket");
             return -1;
         }
         stream_family = AF_INET;
+
     } else if (type.compare("udp4") == 0) {
+
         stream_fd = socket(AF_INET, SOCK_STREAM, 0);
         if (stream_fd == -1) {
             STREAM_PERROR("socket");
             return -1;
         }
         stream_family = AF_INET;
+
     } else if (type.compare("UDP4") == 0) {
+
         stream_fd = socket(AF_INET, SOCK_STREAM, 0);
         if (stream_fd == -1) {
             STREAM_PERROR("socket");
             return -1;
         }
         stream_family = AF_INET;
+
     } else if (type.compare("AF_INET6") == 0) {
+
         stream_fd = socket(AF_INET6, SOCK_STREAM, 0);
         if (stream_fd == -1) {
             STREAM_PERROR("socket");
             return -1;
         }
         stream_family = AF_INET6;
+
     } else if (type.compare("udp6") == 0) {
+
         stream_fd = socket(AF_INET6, SOCK_STREAM, 0);
         if (stream_fd == -1) {
             STREAM_PERROR("socket");
             return -1;
         }
         stream_family = AF_INET6;
+
     } else if (type.compare("UDP6") == 0) {
+
         stream_fd = socket(AF_INET6, SOCK_STREAM, 0);
         if (stream_fd == -1) {
             STREAM_PERROR("socket");
             return -1;
         }
         stream_family = AF_INET6;
+
     } else {
+
         return -1;
+
     }
 
     int on = 1;
