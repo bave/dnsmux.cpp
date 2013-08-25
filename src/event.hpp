@@ -86,37 +86,54 @@ ed_callback(evutil_socket_t fd, int16_t what, void* arg)
 
     if (ed_ptr->tcp->get_fd() <= 0) {
 ed_callback_reconn_loop:
+
 #ifdef __linux__
         if (tfo) {
+
             ret_size = ed_ptr->tcp->stream_re_sendto(buf, send_size);
             if (ret_size <= 0) {
+                sleep(1);
                 goto ed_callback_reconn_loop;
             }
             ed_ptr->tcp->es_redispatch();
+
         } else {
+
             ed_ptr->tcp->stream_reconnect();
             ret_size = ed_ptr->tcp->stream_send(buf, send_size, 0);
             if (ret_size < 0) {
+                sleep(1);
                 goto ed_callback_reconn_loop;
             }
             ed_ptr->tcp->es_redispatch();
+
         }
+
 #else
+
         ed_ptr->tcp->stream_reconnect();
-        ed_ptr->tcp->es_redispatch();
         ret_size = ed_ptr->tcp->stream_send(buf, send_size, 0);
         if (ret_size < 0) {
+            sleep(1);
             goto ed_callback_reconn_loop;
         }
+        ed_ptr->tcp->es_redispatch();
+
 #endif
         return;
+
     } else {
+
         ret_size = ed_ptr->tcp->stream_send(buf, send_size, 0);
+
         if (ret_size < 0) {
             goto ed_callback_reconn_loop;
         }
+
         return;
+
     }
+
     return;
 }
 
@@ -155,11 +172,14 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
         memmove((es_ptr->recv_buf)+odd_length, es_ptr->recv_buf, ret_size);
         memcpy(es_ptr->recv_buf, es_ptr->odd_buf, odd_length);
     }
+
     seek = 0;
     buf = es_ptr->recv_buf;
+
     for (;;) {
 
         if (ret_size <= seek + 2) {
+
 #ifdef DEBUG
             if (debug) printf("odd_buffering1\n");
 #endif
