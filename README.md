@@ -18,8 +18,6 @@ dnsmux.cpp depends on:
 Usage: node dnsmux [options]
 show help command
     -h, --help
-show debug messages
-    -d, --debug
 one query use one tcp sesstion
     -1, --one
 proxy service port (default: 53)
@@ -30,6 +28,10 @@ dns server ip (default: 8.8.8.8)
     -s, --server <value>
 show version of dnsmux.cpp
     -v, --version
+enable tfo (linux only)
+    -t, --tfo
+show debug messages (when you compile, add -DDEBUG. (make debug))
+    -d, --debug
 ```
 
 ## Contributing
