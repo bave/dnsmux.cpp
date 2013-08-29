@@ -10,7 +10,7 @@ dnsmux.cpp depends on:
 
 # git clone https://github.com/bave/dnsmux.cpp.git
 # cd dnsmux.cpp
-# make
+# gmake
 # ./dnsmux
 ```
 

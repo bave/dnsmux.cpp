@@ -183,7 +183,11 @@ bool dgram::dgram_set_to(const std::string& dest_host, const std::string& dest_p
 
     hints.ai_family = dgram_family;
     hints.ai_socktype = SOCK_DGRAM;
+#ifdef __FreeBSD__
+    hints.ai_flags = 0;
+#else
     hints.ai_flags = AI_ALL | AI_ADDRCONFIG;
+#endif
 
     error = getaddrinfo(dest_host.c_str(), dest_port.c_str(), &hints, &res);
     if (error) {

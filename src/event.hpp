@@ -88,6 +88,7 @@ ed_callback(evutil_socket_t fd, int16_t what, void* arg)
 ed_callback_reconn_loop:
 
 #ifdef __linux__
+
         if (tfo) {
 
             ret_size = ed_ptr->tcp->stream_re_sendto(buf, send_size);

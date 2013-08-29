@@ -155,7 +155,11 @@ stream::stream_sendto(const void* buf, size_t length,
 
     hints.ai_family = stream_family;
     hints.ai_socktype = SOCK_STREAM;
+#ifdef __FreeBSD__ 
+    hints.ai_flags = 0;
+#else
     hints.ai_flags = AI_ALL | AI_ADDRCONFIG;
+#endif
 
     error = getaddrinfo(dest_host.c_str(), dest_port.c_str(), &hints, &res);
     if (error) {
@@ -384,7 +388,11 @@ stream::stream_connect(const std::string& dest_host, const std::string& dest_por
 
     hints.ai_family = stream_family;
     hints.ai_socktype = SOCK_STREAM;
+#ifdef __FreeBSD__ 
+    hints.ai_flags = 0;
+#else
     hints.ai_flags = AI_ALL | AI_ADDRCONFIG;
+#endif
 
     error = getaddrinfo(dest_host.c_str(), dest_port.c_str(), &hints, &res);
     if (error) {
