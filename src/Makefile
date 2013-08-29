@@ -34,14 +34,12 @@ debug: dnsmux.cpp event.hpp stream.hpp dgram.hpp id_table.hpp ns_parser.hpp util
 
 else
 
-dnsmux:
-	# --- CAUTION ----
-	# This Makefile is supported by Macosx/Linux.
-	# However, this software is available to run on FreeBSD.
-	# If you want to use on FreeBSD, Please complie its yourself.
+dnsmux: dnsmux.cpp event.hpp stream.hpp dgram.hpp id_table.hpp ns_parser.hpp utils.hpp common.hpp
+    g++ -O3 -Wall -Wno-write-strings -o $@ ./dnsmux.cpp -levent -L/usr/local/lib/event2
 .PHONY : dnsmux
 
-debug:
+debug: dnsmux.cpp event.hpp stream.hpp dgram.hpp id_table.hpp ns_parser.hpp utils.hpp common.hpp
+    g++ -O0 -g -Wall -Wno-write-strings -o dnsmux_debug ./dnsmux.cpp -levent -L/usr/local/lib/event2 -DDEBUG
 .PHONY : debug
 
 endif
