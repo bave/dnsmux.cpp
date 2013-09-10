@@ -1,8 +1,6 @@
 
 UNAME := $(shell uname -s)
 
-
-
 ifeq ($(UNAME),Darwin)
 
 all:dgram_server dgram_client stream_server stream_client id_table name_pkt name_tcp_pkt

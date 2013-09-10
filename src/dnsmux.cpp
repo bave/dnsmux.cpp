@@ -126,8 +126,15 @@ main(int argc, char** argv)
     udp6.dgram_bind(opt_l, opt_p);
 
     ev_stream tcp;
+
     tcp.stream_open("AF_INET");
-    if (tcp.stream_connect(opt_s, "53") == false) exit(EXIT_FAILURE);
+    if (tcp.stream_connect(opt_s, "53") == false) {
+        tcp.stream_init();
+        tcp.stream_open("AF_INET6");
+        if (tcp.stream_connect(opt_s, "53") == false) {
+            exit(EXIT_FAILURE);
+        }
+    }
 
     udp4.ed_set_ev_base(ev_base);
     udp4.set_opposite_stream(&tcp);

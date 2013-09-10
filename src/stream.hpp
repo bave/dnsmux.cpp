@@ -91,6 +91,8 @@ public:
         
     };
 
+    void stream_init();
+
     int stream_open(const char* type);
     int stream_open(const std::string& type);
 
@@ -321,6 +323,20 @@ stream::stream_close()
         stream_fd = -1;
         return true;
     }
+}
+
+void stream::stream_init()
+{
+    if(stream_fd) {
+        stream_close();
+    }
+    if (stream_accept_fd) {
+        stream_accept_close();
+    }
+    stream_family = 0;
+    stream_status = STREAM_UNUSED;
+    memset(&stream_peer_sockaddr, 0, sizeof(stream_peer_sockaddr));
+    return;
 }
 
 bool
