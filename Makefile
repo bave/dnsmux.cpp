@@ -3,19 +3,19 @@ all: dnsmux test
 .PHONY : all
 
 dnsmux:
-	gmake -C src dnsmux
+	make -C src dnsmux
 .PHONY : dnsmux
 
 debug:
-	gmake -C src debug
+	make -C src debug
 .PHONY : debug
 
 test:
-	gmake -C test
+	make -C test
 .PHONY : test
 
 clean:
-	gmake -C src clean
-	gmake -C test clean
+	make -C src clean
+	make -C test clean
 .PHONY : clean
 

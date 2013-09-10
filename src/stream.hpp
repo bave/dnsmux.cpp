@@ -287,7 +287,7 @@ stream::stream_recv(void* buf, size_t length)
             STREAM_PERROR("recv");
             stream_close();
         } else if (ret == 0) {
-            stream_close();
+            //stream_close();
         }
         return ret;
 
@@ -298,7 +298,7 @@ stream::stream_recv(void* buf, size_t length)
             STREAM_PERROR("recv");
             stream_accept_close();
         } else if (ret == 0) {
-            stream_accept_close();
+            //stream_accept_close();
         }
         return ret;
 

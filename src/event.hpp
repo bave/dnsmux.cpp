@@ -172,27 +172,48 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
     if (odd_length) {
         memmove((es_ptr->recv_buf)+odd_length, es_ptr->recv_buf, ret_size);
         memcpy(es_ptr->recv_buf, es_ptr->odd_buf, odd_length);
+        ret_size = ret_size + odd_length;
     }
 
     seek = 0;
     buf = es_ptr->recv_buf;
 
     for (;;) {
+        if (ret_size == seek + 0) {
+#ifdef DEBUG
+            // XXX be still thinking
+            if (debug) printf("odd_buffering1(%d)\n", __LINE__);
+            if (debug) printf("exit(cant implementation)");
+#endif
+            return;
 
-        if (ret_size <= seek + 2) {
+        } else if (ret_size == seek + 1) {
 
 #ifdef DEBUG
-            if (debug) printf("odd_buffering1\n");
+            // XXX be still thinking
+            if (debug) printf("odd_buffering1(%d)\n", __LINE__);
+            if (debug) printf("exit(cant implementation)");
 #endif
-            odd_length = ret_size - seek - 2;
-            memcpy(es_ptr->odd_buf, &buf[seek+2], odd_length);
+            odd_length = 1;
+            memcpy(es_ptr->odd_buf, &buf[seek+0], odd_length);
+            return;
+
+        } else if (ret_size == seek + 2) {
+#ifdef DEBUG
+            // XXX be still thinking
+            if (debug) printf("odd_buffering1(%d)\n", __LINE__);
+            if (debug) printf("exit(cant implementation)");
+#endif
+            odd_length = 2;
+            memcpy(es_ptr->odd_buf, &buf[seek+0], odd_length);
             return;
         }
+
         msg_length = ntohs(*(uint16_t*)&buf[seek]);
 
         if (ret_size < seek + 2 + msg_length) {
 #ifdef DEBUG
-            if (debug) printf("odd_buffering2\n");
+            if (debug) printf("odd_buffering2(%d)\n", __LINE__);
 #endif
             odd_length = ret_size - seek - 2;
             memcpy(es_ptr->odd_buf, &buf[seek+2], odd_length);
