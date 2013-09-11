@@ -154,7 +154,7 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
     int seek;
     int odd_length = es_ptr->odd_length;
 
-    memset(es_ptr->recv_buf, 0, sizeof(es_ptr->recv_buf));
+    //memset(es_ptr->recv_buf, 0, sizeof(es_ptr->recv_buf));
 
     ret_size = es_ptr->stream_recv(es_ptr->recv_buf, sizeof(es_ptr->recv_buf));
     if (ret_size < 0) {
@@ -166,8 +166,6 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
     } else if (ret_size == 0) {
         return;
     }
-
-    //if (one) { es_ptr->stream_close(); }
 
     if (odd_length) {
         memmove((es_ptr->recv_buf)+odd_length, es_ptr->recv_buf, ret_size);
@@ -182,8 +180,7 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
         if (ret_size == seek + 0) {
 #ifdef DEBUG
             // XXX be still thinking
-            if (debug) printf("odd_buffering1(%d)\n", __LINE__);
-            if (debug) printf("exit(cant implementation)");
+            if (debug) printf("odd_buffering1(%d): %lu\n", __LINE__, ret_size);
 #endif
             return;
 
@@ -192,9 +189,9 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
 #ifdef DEBUG
             // XXX be still thinking
             if (debug) printf("odd_buffering1(%d)\n", __LINE__);
-            if (debug) printf("exit(cant implementation)");
 #endif
             odd_length = 1;
+            es_ptr->odd_length = 1;
             memcpy(es_ptr->odd_buf, &buf[seek+0], odd_length);
             return;
 
@@ -202,9 +199,9 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
 #ifdef DEBUG
             // XXX be still thinking
             if (debug) printf("odd_buffering1(%d)\n", __LINE__);
-            if (debug) printf("exit(cant implementation)");
 #endif
             odd_length = 2;
+            es_ptr->odd_length = 2;
             memcpy(es_ptr->odd_buf, &buf[seek+0], odd_length);
             return;
         }
@@ -213,9 +210,10 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
 
         if (ret_size < seek + 2 + msg_length) {
 #ifdef DEBUG
-            if (debug) printf("odd_buffering2(%d)\n", __LINE__);
+            if (debug) printf("odd_buffering2(%d): %lu\n", __LINE__, ret_size);
 #endif
             odd_length = ret_size - seek - 2;
+            es_ptr->odd_length = ret_size - seek - 2;
             memcpy(es_ptr->odd_buf, &buf[seek+2], odd_length);
             return;
         }
@@ -259,7 +257,7 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
 
     }
 
-    odd_length = 0;
+    es_ptr->odd_length = 0;
     if (one) { es_ptr->stream_close(); }
     return;
 }
