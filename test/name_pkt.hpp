@@ -31,10 +31,10 @@
  * identifier: You set Question == Reply.
  *
  * flags:
- * 0    1                5    6    7    8           11               15
- * +----+----------------+----+----+----+-----------+----------------+
- * | QR | Operation Code | AA | TC | RA |   Zero    |    Recode      |
- * +----+----------------+----+----+----+-----------+----------------+
+ * 0    1                5    6    7    8     9          11               15
+ * +----+----------------+----+----+----+----+-----------+----------------+
+ * | QR | Operation Code | AA | TC | RD | RA |   Zero    |    Recode      |
+ * +----+----------------+----+----+----+----+-----------+----------------+
  *
  * QR : Question or Reply 
  *  0 : Question
@@ -51,6 +51,10 @@
  *
  * TC : Truncated
  * (UDP segments over 512bytes, Only the first 512bytes of the reply)
+ *  0 : no
+ *  1 : yes
+ *
+ * RD : Recursion Desired
  *  0 : no
  *  1 : yes
  *

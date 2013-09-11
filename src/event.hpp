@@ -232,6 +232,9 @@ es_callback(evutil_socket_t fd, int16_t what, void* arg)
             nsp.print_answer();
         }
 
+        // XXX z flag filling
+        buf[seek+2+4] = buf[seek+2+4] & 0x8f;
+
         if (sa->sa_family == AF_INET) {
             es_ptr->udp4->dgram_set_to(sa, sizeof(struct sockaddr_in));
             es_ptr->udp4->dgram_sendto(&buf[seek+2], msg_length, 0);
