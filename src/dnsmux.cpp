@@ -40,8 +40,6 @@ usage()
             "    -l, --local <value>\n"
             " * dns server port (default: 53)\n"
             "    -p, --port <value>\n"
-            " * dns server ip (default: 8.8.8.8)\n"
-            "    -s, --server <value>\n"
             " * dns server port (default: 8.8.8.8)\n"
             "    -s, --server <value>\n");
     return;

@@ -90,6 +90,7 @@ int main(int argc, char** argv)
     }
 
 
+    select
     re:
     FD_ZERO(&s_fd);
     FD_SET(sockfd, &s_fd);
