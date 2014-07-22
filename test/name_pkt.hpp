@@ -137,37 +137,37 @@ class name_pkt {
 
 // uint16_t buf , u_char *pointer
 #define N_READ16(buf, cp) {   \
-	memcpy(&(buf), (cp), 2);  \
-	for(size_t i=0; i<2; i++) \
-	cp++;                     \
+    memcpy(&(buf), (cp), 2);  \
+    for(size_t i=0; i<2; i++) \
+    cp++;                     \
 }
 
 // uint32_t buf , u_char *pointer
 #define N_READ32(buf, cp) {   \
-	memcpy(&buf, cp, 4);      \
-	for(size_t i=0; i<4; i++) \
-	cp++;                     \
+    memcpy(&buf, cp, 4);      \
+    for(size_t i=0; i<4; i++) \
+    cp++;                     \
 }
 
 // uint16_t buf , u_char *pointer
 #define N_WRITE16(buf, cp) {  \
-	memcpy(cp,&buf,2);        \
-	for(size_t i=0; i<2; i++) \
-	cp++;                     \
-	                          \
+    memcpy(cp,&buf,2);        \
+    for(size_t i=0; i<2; i++) \
+    cp++;                     \
+                              \
 }
 
 // uint32_t buf , u_char *pointer
 #define N_WRITE32(buf, cp) {  \
-	memcpy(cp,&buf,4);        \
-	for(size_t i=0; i<4; i++) \
-	cp++;                     \
+    memcpy(cp,&buf,4);        \
+    for(size_t i=0; i<4; i++) \
+    cp++;                     \
 }
 
 #define N_WRITE128(buf, cp) {  \
-	memcpy(cp,&buf,16);        \
-	for(size_t i=0; i<16; i++) \
-	cp++;                      \
+    memcpy(cp,&buf,16);        \
+    for(size_t i=0; i<16; i++) \
+    cp++;                      \
 }
 
 public:
@@ -212,43 +212,33 @@ bool n_create_rr_answer(string &s);
 // you can use out of class function
 size_t n_compress(const char *src, size_t src_size, char *dst, size_t dst_size);
 
-
 private:
 
 // class member (for class information)
 u_char *count_pointer;
-size_t compress_size;
+//size_t compress_size;
 size_t n_size_payload;
 u_char n_payload_buf[UDP_PACKET_SIZE];
 
 // class member (for packet header)
 uint16_t n_id;    // identifier
 uint16_t n_flags; // flags
-#define QR         0x8000 // if your packet is answer, you must check this flag.
-#define OC_Reverse 0x0800 // i dont know.
-#define OC_Status  0x1800 // i dont know.
-#define AA         0x0400 // if you can assert this flag ,you must check with QR!
-#define TC         0x0200 // when your packet data will be over 512, 
-// you check this flag, and you manage flagmentation datagram for your self.
-#define RD         0x0100 // you want to request recursing to nameserver.you check this flag.
-#define RA         0x0080 // you want to request recursing to nameserver.you check this flag.
-#define RE_Error   0x0003 // if you return to client error packet.you must check this flag.
-//0x8000
-//0x4000
-//0x2000
-//0x1000
-//0x0800
-//0x0400
-//0x0200
-//0x0100
-//0x0080
-//0x0040
-//0x0020
-//0x0010
-//0x0008
-//0x0004
-//0x0002
-//0x0001
+#define QR         0x8000 // Respons, message is a response.
+#define OP0400     0x4000 // Opcode, Standard query (0)
+#define OP0200     0x2000 // Opcode, Standard query (0)
+#define OP0100     0x1000 // Opcode, Standard query (0)
+#define OP0080     0x0800 // Opcode, Standard query (0)
+#define AA         0x0400 // Authoritative Answer.
+#define TC         0x0200 // Truncated, when your packet data will be over 512.
+#define RD         0x0100 // Recursion Desired. 
+#define RA         0x0080 // Recursion Available.
+#define Z          0x0040 // Zero, reserved (0)
+#define AD         0x0020 // authenticated Dataa (for DNSSEC).
+#define CD         0x0010 // Checking disabled. (for DNSSEC)
+#define RC0008     0x0008 // R code.
+#define RC0004     0x0004 // R code.
+#define RC0002     0x0002 // R code.
+#define RC0001     0x0001 // R code.
 
 // resource recode numver
 uint16_t n_qus;   // question number

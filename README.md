@@ -15,7 +15,7 @@ dnsmux.cpp depends on:
 ```
 
 ```
-Usage: node dnsmux [options]
+Usage: dnsmux [options]
 show help command
     -h, --help
 one query use one tcp sesstion
@@ -33,6 +33,10 @@ enable tfo (linux only)
 show debug messages (when you compile, add -DDEBUG. (make debug))
     -d, --debug
 ```
+
+## ToDO
+1. レゾルバから要求されたリソースレコードが4096byteを超えるものだった場合のハンドリング
+2. hoge
 
 ## Contributing
 

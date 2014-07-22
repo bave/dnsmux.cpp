@@ -26,6 +26,9 @@ name_pkt: name_pkt.cpp name_pkt.hpp
 name_tcp_pkt: name_tcp_pkt.cpp name_pkt.hpp
 	g++ -g -Wall -o ./name_tcp_pkt ./name_tcp_pkt.cpp -lresolv
 
+poisoning_a: name_pkt_poison.cpp name_pkt.hpp
+	g++ -g -Wall -o ./poisoning_a ./name_pkt_poison.cpp -lresolv
+
 else
 ifeq ($(UNAME),Linux)
 
@@ -63,4 +66,4 @@ endif
 endif
 
 clean:
-	rm -rf *.dSYM ./stream_client ./stream_server ./dgram_server ./dgram_client ./id_table ./name_pkt ./name_tcp_pkt ./name_tfo_pkt
+	rm -rf *.dSYM ./stream_client ./stream_server ./dgram_server ./dgram_client ./id_table ./name_pkt ./name_tcp_pkt ./name_tfo_pkt ./poisoning_a
