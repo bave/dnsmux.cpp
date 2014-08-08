@@ -403,8 +403,6 @@ bool name_pkt::n_create_rr_answer(std::string &s)
     return true;
 };
 
-#include "utils.hpp"
-
 bool name_pkt::n_create_rr_nameserverNS(std::string &name, std::string &glue)
 {
     n_name++;
