@@ -34,15 +34,18 @@ memdump(void* buffer, int length)
     int j;
     int k;
     int lines = length/16 + (length%16?1:0);
-    for (i=0; i<lines; i++) {
-        printf("%p : %08x %08x %08x %08x\n",
-                addr32,
-                htonl(*(addr32)),
-                htonl(*(addr32+1)),
-                htonl(*(addr32+2)),
-                htonl(*(addr32+3))
-        );
-        addr32 += 4;
+    if (lines > 1) {
+        for (i=0; i<lines; i++) {
+            printf("%p : %08x %08x %08x %08x\n",
+                    addr32,
+                    htonl(*(addr32)),
+                    htonl(*(addr32+1)),
+                    htonl(*(addr32+2)),
+                    htonl(*(addr32+3))
+            );
+            addr32 += 4;
+        }
+    } else {
     }
 
     j = length%16;
